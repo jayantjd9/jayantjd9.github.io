@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Be My Valentine?</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      background: white;
+      padding: 30px 20px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 25px;
+      color: #ff4d6d;
+    }
+
+    .buttons {
+      position: relative;
+      height: 160px;
+    }
+
+    button {
+      padding: 14px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    #yesBtn {
+      background: #ff4d6d;
+      color: white;
+    }
+
+    #noBtn {
+      position: absolute;
+      background: #444;
+      color: white;
+      left: 50%;
+      top: 80px;
+      transform: translateX(-50%);
+    }
+
+    .result {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .yay {
+      font-size: 28px;
+      color: #ff4d6d;
+      animation: pop 0.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes pop {
+      from { transform: scale(1); }
+      to { transform: scale(1.2); }
+    }
+
+    .hug-gif {
+      width: 220px;
+      margin-top: 15px;
+    }
+
+    /* 💘 SIMP SECTION */
+    .simp-section {
+      display: none;
+      margin-top: 20px;
+      animation: fadeIn 0.8s ease forwards;
+    }
+
+    .simp-title {
+      font-size: 22px;
+      color: #ff4d6d;
+      margin-bottom: 10px;
+    }
+
+    .simp-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .simp-list li {
+      font-size: 18px;
+      margin: 8px 0;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: slideUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="confetti"></canvas>
+
+  <div class="container">
+    <h1>Supriya Thakur,<br>will you be my Valentine? 💖</h1>
+
+    <div class="buttons" id="buttons">
+      <button id="yesBtn">Yes 💘</button>
+      <button id="noBtn">Hell Nah 😤</button>
+    </div>
+
+    <div class="result" id="result">
+      <div class="yay">YAYYYYYY!! 😍❤️</div>
+      <img
+        class="hug-gif"
+        src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif"
+        alt="Cute couple hugging"
+      />
+    </div>
+
+    <!-- 💘 SIMP CONTENT -->
+    <div class="simp-section" id="simpSection">
+      <div class="simp-title">Reasons I simp for you 💘</div>
+      <ul class="simp-list">
+        <li style="animation-delay: 0.2s;">1️⃣ she pretty 🤌🏽</li>
+        <li style="animation-delay: 0.6s;">2️⃣ she smart 🧠</li>
+        <li style="animation-delay: 1s;">3️⃣ she talented 👩‍🎤</li>
+        <li style="animation-delay: 1.4s;">4️⃣ she’s a whole package!!! 💝</li>
+      </ul>
+    </div>
+  </div>
+
+  <audio id="music" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c1e4c2d7a.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const result = document.getElementById("result");
+    const buttons = document.getElementById("buttons");
+    const music = document.getElementById("music");
+    const container = document.querySelector(".container");
+    const simpSection = document.getElementById("simpSection");
+
+    function dodgeButton() {
+      const containerRect = container.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const maxX = containerRect.width - btnRect.width;
+      const maxY = containerRect.height - btnRect.height;
+
+      noBtn.style.left = `${Math.random() * maxX}px`;
+      noBtn.style.top = `${Math.random() * maxY}px`;
+      noBtn.style.transform = "none";
+    }
+
+    noBtn.addEventListener("mouseenter", dodgeButton);
+    noBtn.addEventListener("touchstart", dodgeButton);
+    noBtn.addEventListener("click", dodgeButton);
+
+    yesBtn.addEventListener("click", () => {
+      buttons.style.display = "none";
+      result.style.display = "block";
+      music.play();
+      startConfetti();
+
+      // 💘 Show simp section after 2 seconds
+      setTimeout(() => {
+        simpSection.style.display = "block";
+      }, 2000);
+    });
+
+    /* 🎉 CONFETTI */
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const confetti = Array.from({ length: 150 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 4,
+      d: Math.random() * 150,
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`
+    }));
+
+    function startConfetti() {
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confetti.forEach(c => {
+          ctx.beginPath();
+          ctx.fillStyle = c.color;
+          ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        update();
+        requestAnimationFrame(draw);
+      }
+
+      function update() {
+        confetti.forEach(c => {
+          c.y += Math.cos(c.d) + 4;
+          if (c.y > canvas.height) {
+            c.y = -10;
+            c.x = Math.random() * canvas.width;
+          }
+        });
+      }
+      draw();
+    }
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+
+</body>
+</html>
